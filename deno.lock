@@ -1,0 +1,16 @@
+{
+  "version": "4",
+  "specifiers": {
+    "jsr:@shapex/shapex@^1.1.1": "1.1.1"
+  },
+  "jsr": {
+    "@shapex/shapex@1.1.1": {
+      "integrity": "196cd52a1e7c06295dec6d58116d407b1d8b630cf7073db4118a402f9e4a9dd8"
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@shapex/shapex@^1.1.1"
+    ]
+  }
+}

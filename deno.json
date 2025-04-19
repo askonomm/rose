@@ -1,0 +1,9 @@
+{
+  "name": "@shapex/rose",
+  "version": "0.1.0",
+  "license": "MIT",
+  "exports": "./src/rose.ts",
+  "imports": {
+    "@shapex/shapex": "jsr:@shapex/shapex@^1.1.1"
+  }
+}
