@@ -1,3 +1,5 @@
+<img src="https://github.com/user-attachments/assets/803506b1-759c-4142-bf75-141efa122641" width="100" height="100" />
+
 # ShapeX Rose
 
 A JavaScript/TypeScript web framework for the [Deno](https://deno.com) runtime built on top of [ShapeX](https://github.com/tryshapex/shapex) event-driven application framework.
