@@ -1,8 +1,11 @@
 {
   "name": "@shapex/rose",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
-  "exports": "./src/rose.ts",
+  "exports": {
+    ".": "./src/rose.ts",
+    "./router": "./src/router.ts"
+  },
   "imports": {
     "@shapex/shapex": "jsr:@shapex/shapex@^1.1.1"
   }
