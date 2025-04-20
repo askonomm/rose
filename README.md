@@ -2,7 +2,7 @@
 
 A JavaScript/TypeScript web framework for the [Deno](https://deno.com) runtime built on top of [ShapeX](https://github.com/tryshapex/shapex) event-driven application framework.
 
-**Note:** not ready for production use, and yes, the idea is to support more runtimes in the future. There's also no real docs yet, so you have to refer to the code for now.
+**Note:** still an early release so be aware that there could be potential bugs, and yes, the idea is to support more runtimes in the future.
 
 ## Example application
 
