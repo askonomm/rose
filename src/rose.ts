@@ -36,7 +36,12 @@ export default function Rose<T extends RoseState>(state: T): RoseInstance<T> {
   const $ = ShapeX<T>(state);
   const routes = [] as RoseRoute[];
 
-  $.subscribe("http.request", (state, req: Request) => {
+  $.subscribe("http.request", (state, req?: Request) => {
+    // No request, nothing to do
+    if (!req) {
+      return { state };
+    }
+
     return {
       state: {
         ...state,
@@ -52,14 +57,14 @@ export default function Rose<T extends RoseState>(state: T): RoseInstance<T> {
 
   $.subscribe(
     "http.response.plain",
-    (state, body?: BodyInit | null, status?: number) => {
+    (state, data?: { body?: BodyInit | null; status?: number }) => {
       return {
         state: {
           ...state,
           http: {
             ...state.http,
-            response: new Response(body, {
-              status: status ?? 200,
+            response: new Response(data?.body ?? "", {
+              status: data?.status ?? 200,
               headers: {
                 "Content-Type": "text/plain; charset=utf-8",
               },
@@ -72,14 +77,14 @@ export default function Rose<T extends RoseState>(state: T): RoseInstance<T> {
 
   $.subscribe(
     "http.response.json",
-    (state, body?: BodyInit | null, status?: number) => {
+    (state, data?: { body: BodyInit | null; status?: number }) => {
       return {
         state: {
           ...state,
           http: {
             ...state.http,
-            response: new Response(body, {
-              status: status ?? 200,
+            response: new Response(data?.body, {
+              status: data?.status ?? 200,
               headers: {
                 "Content-Type": "application/json; charset=utf-8",
               },
@@ -100,22 +105,23 @@ export default function Rose<T extends RoseState>(state: T): RoseInstance<T> {
       state.http?.request.method
     );
 
-    // No matching route found, return 404
+    // No matching route found, set response to null
     if (!route) {
       return {
         state,
-        dispatch: {
-          eventName: "http.response.plain",
-          args: ["404."],
+        http: {
+          ...state.http,
+          response: null,
         },
       };
     }
 
+    // Route found, dispatch the route
     return {
       state,
       dispatch: {
-        eventName: route.dispatch,
-        args: [Router.params(route, state.http?.request.url.pathname)],
+        to: route.dispatch,
+        withData: Router.params(route, state.http?.request.url.pathname),
       },
     };
   });

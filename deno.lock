@@ -1,16 +1,16 @@
 {
   "version": "4",
   "specifiers": {
-    "jsr:@shapex/shapex@^1.1.1": "1.1.1"
+    "jsr:@shapex/shapex@2": "2.0.0"
   },
   "jsr": {
-    "@shapex/shapex@1.1.1": {
-      "integrity": "196cd52a1e7c06295dec6d58116d407b1d8b630cf7073db4118a402f9e4a9dd8"
+    "@shapex/shapex@2.0.0": {
+      "integrity": "93042d9993ff438248026a2f41330f6b795b042a282ec77f1d237c9f8563f620"
     }
   },
   "workspace": {
     "dependencies": [
-      "jsr:@shapex/shapex@^1.1.1"
+      "jsr:@shapex/shapex@2"
     ]
   }
 }

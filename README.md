@@ -33,8 +33,8 @@ app.subscribe(
         name: params.who,
       },
       dispatch: {
-        eventName: "http.response.plain",
-        args: [`Hello: ${params.who}`],
+        to: "http.response.plain",
+        withData: `Hello: ${params.who}`,
       },
     };
   }
@@ -92,8 +92,8 @@ app.subscribe(
         name: params.who,
       },
       dispatch: {
-        eventName: "http.response.plain",
-        args: [`Hello: ${params.who}`],
+        to: "http.response.plain",
+        withData: `Hello: ${params.who}`,
       },
     };
   }
@@ -129,8 +129,8 @@ Return a plain response with the `http.response.plain` event like so:
 app.subscribe("my-event", (state) => {
   return {
     dispatch: {
-      eventName: "http.response.plain",
-      args: ["Hello, World"],
+      to: "http.response.plain",
+      withData: "Hello, World",
     },
   };
 });
@@ -142,8 +142,11 @@ Additionally you can also pass along the status code, like so:
 app.subscribe("my-event", (state) => {
   return {
     dispatch: {
-      eventName: "http.response.plain",
-      args: ["Hello, World", 200],
+      to: "http.response.plain",
+      withData: {
+        body: "Hello, World",
+        status: 200,
+      },
     },
   };
 });
@@ -157,12 +160,12 @@ Return a JSON response with the `http.response.json` event like so:
 app.subscribe("my-event", (state) => {
   return {
     dispatch: {
-      eventName: "http.response.json",
-      args: [
-        {
+      to: "http.response.json",
+      withData: {
+        body: {
           hello: "world",
         },
-      ],
+      },
     },
   };
 });
@@ -174,13 +177,13 @@ Additionally you can also pass along the status code, like so:
 app.subscribe("my-event", (state) => {
   return {
     dispatch: {
-      eventName: "http.response.plain",
-      args: [
-        {
+      to: "http.response.plain",
+      withData: {
+        body: {
           hello: "world",
         },
-        200,
-      ],
+        status: 200,
+      },
     },
   };
 });
