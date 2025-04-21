@@ -4,15 +4,57 @@
  * @module
  */
 import type { ShapeXInstance } from "@shapex/shapex";
-import type { RoseOpts, RoseState } from "../rose.ts";
+import type {
+  RoseOpts,
+  RoseState,
+  RosePlatformInstance,
+  RoseResponseBase,
+  RoseRequestBase,
+  RoseInstance,
+} from "../rose.ts";
 import http, { type IncomingMessage, type ServerResponse } from "node:http";
+import { Buffer } from "node:buffer";
+import Bootstrap from "../rose.ts";
 
-const init = <T extends RoseState>($: ShapeXInstance<T>): void => {
+export type NodeRequest = RoseRequestBase & {
+  body?: BodyInit | null;
+};
+
+export type NodeResponse = RoseResponseBase & {
+  body?: string | object | Buffer;
+};
+
+const init = <T extends RoseState<"node">>($: ShapeXInstance<T>): void => {
+  $.subscribe("set-http.request.body", (state, body?: Buffer) => {
+    return {
+      state: {
+        ...state,
+        http: {
+          ...state.http,
+          request: {
+            ...state.http?.request,
+            body,
+          },
+        },
+      },
+    };
+  });
+
   $.subscribe("http.request", (state, req?: IncomingMessage) => {
     // No request, nothing to do
     if (!req) {
       return { state };
     }
+
+    const bodyChunks: Buffer[] = [];
+
+    req.on("data", (chunk: Buffer) => {
+      bodyChunks.push(chunk);
+    });
+
+    req.on("end", () => {
+      $.dispatch("set-http.request.body", Buffer.concat(bodyChunks));
+    });
 
     return {
       state: {
@@ -27,50 +69,44 @@ const init = <T extends RoseState>($: ShapeXInstance<T>): void => {
     };
   });
 
-  $.subscribe(
-    "http.response.plain",
-    (state, data?: { body?: unknown; status?: number }) => {
-      return {
-        state: {
-          ...state,
-          http: {
-            ...state.http,
-            response: {
-              body: data?.body ?? "",
-              status: data?.status ?? 200,
-              headers: {
-                "Content-Type": "text/plain; charset=utf-8",
-              },
+  $.subscribe("http.response.plain", (state, data?: NodeResponse) => {
+    return {
+      state: {
+        ...state,
+        http: {
+          ...state.http,
+          response: {
+            body: data?.body ?? "",
+            status: data?.status ?? 200,
+            headers: {
+              "Content-Type": "text/plain; charset=utf-8",
             },
           },
         },
-      };
-    }
-  );
+      },
+    };
+  });
 
-  $.subscribe(
-    "http.response.json",
-    (state, data?: { body: unknown; status?: number }) => {
-      return {
-        state: {
-          ...state,
-          http: {
-            ...state.http,
-            response: {
-              body: data?.body,
-              status: data?.status ?? 200,
-              headers: {
-                "Content-Type": "application/json; charset=utf-8",
-              },
+  $.subscribe("http.response.json", (state, data?: NodeResponse) => {
+    return {
+      state: {
+        ...state,
+        http: {
+          ...state.http,
+          response: {
+            body: data?.body,
+            status: data?.status ?? 200,
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
             },
           },
         },
-      };
-    }
-  );
+      },
+    };
+  });
 };
 
-const serve = <T extends RoseState>(
+const serve = <T extends RoseState<"node">>(
   $: ShapeXInstance<T>,
   opts?: RoseOpts
 ): void => {
@@ -102,7 +138,15 @@ const serve = <T extends RoseState>(
   });
 };
 
-export default {
+const runtime = {
   init,
   serve,
-};
+} as RosePlatformInstance<"node">;
+
+export default function Rose<T extends RoseState<"node"> = RoseState<"node">>(
+  state: T = {} as T
+): RoseInstance<T> {
+  return Bootstrap<"node", T>(runtime as RosePlatformInstance<"node">, state);
+}
+
+export { runtime };
