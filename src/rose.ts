@@ -1,8 +1,3 @@
-/**
- * This module contains the generic Rose instance implementation.
- *
- * @module
- */
 import ShapeX, { type ShapeXInstance } from "@shapex/shapex";
 import Router, { type Route } from "./router.ts";
 
