@@ -51,7 +51,7 @@ app.serve({
 
 ## Installation
 
-Rose is available via [JSR](https://jsr.io/@shapex/rose), currently only for the [Deno](https://deno.com) runtime.
+Rose is available via [JSR](https://jsr.io/@shapex/rose).
 
 ## Documentation
 
