@@ -17,7 +17,7 @@ import { Buffer } from "node:buffer";
 import Bootstrap from "../rose.ts";
 
 export type NodeRequest = RoseRequestBase & {
-  body?: BodyInit | null;
+  body?: string | object | Buffer;
 };
 
 export type NodeResponse = RoseResponseBase & {
