@@ -1,3 +1,8 @@
+/**
+ * This module contains the generic Rose instance implementation.
+ *
+ * @module
+ */
 import ShapeX, { type ShapeXInstance } from "@shapex/shapex";
 import Router, { type Route } from "./router.ts";
 
@@ -5,14 +10,32 @@ export type RoseRoute = Route & {
   dispatch: string;
 };
 
+export type RoseRequest = {
+  url: URL;
+  method: string;
+};
+
+export type RoseResponse = {
+  body?: unknown;
+  status?: number;
+  headers?: {
+    [key: string]: string;
+  };
+};
+
 export type RoseState = {
   http?: {
-    request: {
-      url: URL;
-      method: string;
-    };
-    response?: Response;
+    request: RoseRequest;
+    response?: RoseResponse;
   };
+};
+
+export type RosePlatformInstance = {
+  init: <T extends RoseState>($: ShapeXInstance<T>) => void;
+  serve: <T extends RoseState>(
+    $: ShapeXInstance<T>,
+    opts?: { port?: number }
+  ) => void;
 };
 
 export type RoseInstance<T> = ShapeXInstance<T> & {
@@ -28,72 +51,16 @@ export type RoseInstance<T> = ShapeXInstance<T> & {
   connect: (path: string, dispatch: string) => void;
 };
 
-type RoseOpts = {
+export type RoseOpts = {
   port?: number;
 };
 
-export default function Rose<T extends RoseState>(state: T): RoseInstance<T> {
+export default function Rose<T extends RoseState>(
+  platformInstance: RosePlatformInstance,
+  state: T
+): RoseInstance<T> {
   const $ = ShapeX<T>(state);
   const routes = [] as RoseRoute[];
-
-  $.subscribe("http.request", (state, req?: Request) => {
-    // No request, nothing to do
-    if (!req) {
-      return { state };
-    }
-
-    return {
-      state: {
-        ...state,
-        http: {
-          request: {
-            url: new URL(req.url),
-            method: req.method,
-          },
-        },
-      },
-    };
-  });
-
-  $.subscribe(
-    "http.response.plain",
-    (state, data?: { body?: BodyInit | null; status?: number }) => {
-      return {
-        state: {
-          ...state,
-          http: {
-            ...state.http,
-            response: new Response(data?.body ?? "", {
-              status: data?.status ?? 200,
-              headers: {
-                "Content-Type": "text/plain; charset=utf-8",
-              },
-            }),
-          },
-        },
-      };
-    }
-  );
-
-  $.subscribe(
-    "http.response.json",
-    (state, data?: { body: BodyInit | null; status?: number }) => {
-      return {
-        state: {
-          ...state,
-          http: {
-            ...state.http,
-            response: new Response(data?.body, {
-              status: data?.status ?? 200,
-              headers: {
-                "Content-Type": "application/json; charset=utf-8",
-              },
-            }),
-          },
-        },
-      };
-    }
-  );
 
   $.subscribe("$.http.request", (state) => {
     // No HTTP state, nothing to do
@@ -121,10 +88,12 @@ export default function Rose<T extends RoseState>(state: T): RoseInstance<T> {
       state,
       dispatch: {
         to: route.dispatch,
-        withData: Router.params(route, state.http?.request.url.pathname),
+        with: Router.params(route, state.http?.request.url.pathname),
       },
     };
   });
+
+  platformInstance.init($);
 
   // Create get routes
   const _get = (path: string, dispatch: string) => {
@@ -201,19 +170,7 @@ export default function Rose<T extends RoseState>(state: T): RoseInstance<T> {
 
   // Start HTTP server
   const _serve = (opts?: RoseOpts) => {
-    Deno.serve({ port: opts?.port ?? 3000 }, (req) => {
-      $.dispatch("http.request", req);
-
-      return (
-        $.state().http?.response ??
-        new Response("Not found.", {
-          status: 404,
-          headers: {
-            "Content-Type": "text/plain; charset=utf-8",
-          },
-        })
-      );
-    });
+    platformInstance.serve($, opts);
   };
 
   return {

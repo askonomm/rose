@@ -1,16 +1,39 @@
 {
   "version": "4",
   "specifiers": {
-    "jsr:@shapex/shapex@2": "2.0.0"
+    "jsr:@shapex/shapex@^2.1.1": "2.1.1",
+    "npm:@types/node@*": "22.12.0",
+    "npm:@types/node@^22.14.1": "22.14.1"
   },
   "jsr": {
-    "@shapex/shapex@2.0.0": {
-      "integrity": "93042d9993ff438248026a2f41330f6b795b042a282ec77f1d237c9f8563f620"
+    "@shapex/shapex@2.1.1": {
+      "integrity": "2fc424307028f1d809742e7ba423dc0c6c834340c6fad624e9768ccdd3b841be"
+    }
+  },
+  "npm": {
+    "@types/node@22.12.0": {
+      "integrity": "sha512-Fll2FZ1riMjNmlmJOdAyY5pUbkftXslB5DgEzlIuNaiWhXd00FhWxVC/r4yV/4wBb9JfImTu+jiSvXTkJ7F/gA==",
+      "dependencies": [
+        "undici-types@6.20.0"
+      ]
+    },
+    "@types/node@22.14.1": {
+      "integrity": "sha512-u0HuPQwe/dHrItgHHpmw3N2fYCR6x4ivMNbPHRkBVP4CvN+kiRrKHWk3i8tXiO/joPwXLMYvF9TTF0eqgHIuOw==",
+      "dependencies": [
+        "undici-types@6.21.0"
+      ]
+    },
+    "undici-types@6.20.0": {
+      "integrity": "sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg=="
+    },
+    "undici-types@6.21.0": {
+      "integrity": "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="
     }
   },
   "workspace": {
     "dependencies": [
-      "jsr:@shapex/shapex@2"
+      "jsr:@shapex/shapex@^2.1.1",
+      "npm:@types/node@^22.14.1"
     ]
   }
 }

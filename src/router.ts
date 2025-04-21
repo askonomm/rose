@@ -1,3 +1,8 @@
+/**
+ * This module contains the Rose Router.
+ *
+ * @module
+ */
 export type Route = {
   path: string;
   method: string;
