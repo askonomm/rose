@@ -1,13 +1,12 @@
 # ShapeX Rose
 
-A JavaScript/TypeScript web framework for the [Deno](https://deno.com) runtime built on top of [ShapeX](https://github.com/tryshapex/shapex) event-driven application framework.
-
-**Note:** still an early release so be aware that there could be potential bugs, and yes, the idea is to support more runtimes in the future.
+A JavaScript/TypeScript web framework for the [Deno](https://deno.com) and [Node](https://nodejs.org) runtime built on top of [ShapeX](https://github.com/tryshapex/shapex) event-driven application framework.
 
 ## Example application
 
 ```typescript
 import Rose, { type RoseState } from "@shapex/rose";
+import DenoRunner from "@shapex/rose/runtime/deno";
 import type { RouteParams } from "@shapex/rose/router";
 
 // Define app state
@@ -16,7 +15,7 @@ type AppState = RoseState & {
 };
 
 // Create app instance with default state
-const app = Rose<AppState>({
+const app = Rose<AppState>(DenoRunner, {
   name: null,
 });
 
@@ -34,7 +33,9 @@ app.subscribe(
       },
       dispatch: {
         to: "http.response.plain",
-        withData: `Hello: ${params.who}`,
+        with: {
+          body: `Hello: ${params.who}`,
+        },
       },
     };
   }
@@ -54,18 +55,60 @@ Rose is available via [JSR](https://jsr.io/@shapex/rose), currently only for the
 
 Rose does away with the classical MVC pattern for web backends and instead encourages the use of events and subscriptions. The idea being that if everything is an event or a subscription listening to an event, then it's easier to reason about the complexity of your application as you can focus on just that, without getting lost in the sea of terminology and different abstraction patterns. It's all just action and reaction.
 
-### State
+### Platforms
 
-Much like using [ShapeX]() on its own, at the core of your application is state. You start by initiating with some initial state, which is an intersection type of `RoseState`:
+Rose works on both the [Deno](https://deno.com) and [Node](https://nodejs.org) runtimes with their own implementation abstraction.
+
+**Deno example**:
 
 ```typescript
 import Rose, { type RoseState } from "@shapex/rose";
+import DenoRunner from "@shapex/rose/runtime/deno";
+
+// Define app state
+type AppState = RoseState & {
+  name: string | null;
+};
+
+// Create app instance with default state
+const app = Rose<AppState>(DenoRunner, {
+  name: null,
+});
+```
+
+**Node.js example**:
+
+```typescript
+import Rose, { type RoseState } from "@shapex/rose";
+import NodeRunner from "@shapex/rose/runtime/node";
+
+// Define app state
+type AppState = RoseState & {
+  name: string | null;
+};
+
+// Create app instance with default state
+const app = Rose<AppState>(NodeRunner, {
+  name: null,
+});
+```
+
+It's really just as simple as just adding the wanted runtime runner as the first parameter to `Rose` and the runner
+will take care of the rest on its own.
+
+### State
+
+Much like using [ShapeX](https://github.com/tryshapex/shapex) on its own, at the core of your application is state. You start by initiating with some initial state, which is an intersection type of `RoseState`:
+
+```typescript
+import Rose, { type RoseState } from "@shapex/rose";
+import DenoRunner from "@shapex/rose/runtime/deno";
 
 type AppState = RoseState & {
   name: string | null;
 };
 
-const app = Rose<AppState>({
+const app = Rose<AppState>(DenoRunner, {
   name: null,
 });
 ```
@@ -93,7 +136,9 @@ app.subscribe(
       },
       dispatch: {
         to: "http.response.plain",
-        withData: `Hello: ${params.who}`,
+        with: {
+          body: `Hello: ${params.who}`,
+        },
       },
     };
   }
@@ -115,13 +160,34 @@ app.subscribe("my-event", (state) => {
 });
 ```
 
-To see what else is available in the `http` state, check out `RoseState` type.
+The `http.request` state consists of the following information:
+
+```typescript
+export type RoseRequest = {
+  url: URL;
+  method: string;
+};
+```
 
 ### Built-in events
 
 Rose comes with some built-in events.
 
-#### `http.response.plain`
+#### Responses
+
+You can dispatch response events to return data to the client. All responses must conform to the `RoseResponse` type which looks like this:
+
+```typescript
+export type RoseResponse = {
+  body?: unknown;
+  status?: number;
+  headers?: {
+    [key: string]: string;
+  };
+};
+```
+
+##### `http.response.plain`
 
 Return a plain response with the `http.response.plain` event like so:
 
@@ -130,29 +196,15 @@ app.subscribe("my-event", (state) => {
   return {
     dispatch: {
       to: "http.response.plain",
-      withData: "Hello, World",
-    },
-  };
-});
-```
-
-Additionally you can also pass along the status code, like so:
-
-```typescript
-app.subscribe("my-event", (state) => {
-  return {
-    dispatch: {
-      to: "http.response.plain",
-      withData: {
+      with: {
         body: "Hello, World",
-        status: 200,
       },
     },
   };
 });
 ```
 
-#### `http.response.json`
+##### `http.response.json`
 
 Return a JSON response with the `http.response.json` event like so:
 
@@ -161,28 +213,10 @@ app.subscribe("my-event", (state) => {
   return {
     dispatch: {
       to: "http.response.json",
-      withData: {
+      with: {
         body: {
           hello: "world",
         },
-      },
-    },
-  };
-});
-```
-
-Additionally you can also pass along the status code, like so:
-
-```typescript
-app.subscribe("my-event", (state) => {
-  return {
-    dispatch: {
-      to: "http.response.plain",
-      withData: {
-        body: {
-          hello: "world",
-        },
-        status: 200,
       },
     },
   };

@@ -4,9 +4,12 @@
   "license": "MIT",
   "exports": {
     ".": "./src/rose.ts",
-    "./router": "./src/router.ts"
+    "./router": "./src/router.ts",
+    "./runtime/deno": "./src/runtime/deno.ts",
+    "./runtime/node": "./src/runtime/node.ts"
   },
   "imports": {
-    "@shapex/shapex": "jsr:@shapex/shapex@^2.0.0"
+    "@shapex/shapex": "jsr:@shapex/shapex@^2.1.1",
+    "@types/node": "npm:@types/node@^22.14.1"
   }
 }
