@@ -1,59 +1,83 @@
 import ShapeX, { type ShapeXInstance } from "@shapex/shapex";
 import Router, { type Route } from "./router.ts";
+import type { DenoRequest, DenoResponse } from "./runtime/deno.ts";
+import type { NodeResponse } from "./runtime/node.ts";
 
 export type RoseRoute = Route & {
   dispatch: string;
 };
 
-export type RoseRequest = {
+export type RoseRequestBase = {
   url: URL;
   method: string;
 };
 
-export type RoseResponse = {
-  body?: unknown;
+export type RoseRequest<R extends RuntimeType = "deno"> = R extends "deno"
+  ? DenoRequest
+  : DenoRequest;
+
+export type RoseResponseBase = {
   status?: number;
   headers?: {
     [key: string]: string;
   };
 };
 
-export type RoseState = {
+export type RoseResponse<R extends RuntimeType = "deno"> = R extends "deno"
+  ? DenoResponse
+  : NodeResponse;
+
+export type RoseState<R extends RuntimeType = "deno"> = {
   http?: {
     request: RoseRequest;
-    response?: RoseResponse;
+    response?: RoseResponse<R>;
   };
 };
 
-export type RosePlatformInstance = {
-  init: <T extends RoseState>($: ShapeXInstance<T>) => void;
-  serve: <T extends RoseState>(
+/**
+ * Type of runtime platform supported by Rose. Either 'deno' or 'node'.
+ */
+export type RuntimeType = "deno" | "node";
+
+/**
+ * Platform instance interface for Rose runtimes.
+ */
+export type RosePlatformInstance<R extends RuntimeType> = {
+  init: <T extends RoseState<R>>($: ShapeXInstance<T>) => void;
+  serve: <T extends RoseState<R>>(
     $: ShapeXInstance<T>,
     opts?: { port?: number }
   ) => void;
 };
 
-export type RoseInstance<T> = ShapeXInstance<T> & {
-  serve: (opts?: RoseOpts) => void;
-  get: (path: string, dispatch: string) => void;
-  post: (path: string, dispatch: string) => void;
-  put: (path: string, dispatch: string) => void;
-  delete: (path: string, dispatch: string) => void;
-  patch: (path: string, dispatch: string) => void;
-  options: (path: string, dispatch: string) => void;
-  head: (path: string, dispatch: string) => void;
-  trace: (path: string, dispatch: string) => void;
-  connect: (path: string, dispatch: string) => void;
-};
+/**
+ * Rose instance with HTTP route methods and ShapeX instance methods.
+ */
+export type RoseInstance<T extends RoseState<RuntimeType>> =
+  ShapeXInstance<T> & {
+    serve: (opts?: RoseOpts) => void;
+    get: (path: string, dispatch: string) => void;
+    post: (path: string, dispatch: string) => void;
+    put: (path: string, dispatch: string) => void;
+    delete: (path: string, dispatch: string) => void;
+    patch: (path: string, dispatch: string) => void;
+    options: (path: string, dispatch: string) => void;
+    head: (path: string, dispatch: string) => void;
+    trace: (path: string, dispatch: string) => void;
+    connect: (path: string, dispatch: string) => void;
+  };
 
 export type RoseOpts = {
   port?: number;
 };
 
-export default function Rose<T extends RoseState>(
-  platformInstance: RosePlatformInstance,
-  state: T
-): RoseInstance<T> {
+/**
+ * Creates a Rose instance with the given runtime platform.
+ */
+export default function Bootstrap<
+  R extends RuntimeType,
+  T extends RoseState<R> = RoseState<R>
+>(platformInstance: RosePlatformInstance<R>, state: T): RoseInstance<T> {
   const $ = ShapeX<T>(state);
   const routes = [] as RoseRoute[];
 

@@ -1,14 +1,14 @@
-<img src="https://github.com/user-attachments/assets/803506b1-759c-4142-bf75-141efa122641" width="100" height="100" />
+<img src="https://github.com/user-attachments/assets/803506b1-759c-4142-bf75-141efa122641" width="75" height="75" />
 
-# ShapeX Rose
+# ShapeX Rosè
 
-A JavaScript/TypeScript web framework for the [Deno](https://deno.com) and [Node](https://nodejs.org) runtime built on top of [ShapeX](https://github.com/tryshapex/shapex) event-driven application framework.
+A JavaScript/TypeScript web framework for the [Deno](https://deno.com) and [Node](https://nodejs.org) runtime built on top of the [ShapeX](https://github.com/tryshapex/shapex) event-driven application framework.
 
 ## Example application
 
 ```typescript
-import Rose, { type RoseState } from "@shapex/rose";
-import DenoRunner from "@shapex/rose/runtime/deno";
+import type { RoseState } from "@shapex/rose";
+import Rose from "@shapex/rose/runtime/deno";
 import type { RouteParams } from "@shapex/rose/router";
 
 // Define app state
@@ -17,7 +17,7 @@ type AppState = RoseState & {
 };
 
 // Create app instance with default state
-const app = Rose<AppState>(DenoRunner, {
+const app = Rose<AppState>({
   name: null,
 });
 
@@ -51,21 +51,21 @@ app.serve({
 
 ## Installation
 
-Rose is available via [JSR](https://jsr.io/@shapex/rose).
+Rosè is available via [JSR](https://jsr.io/@shapex/rose).
 
 ## Documentation
 
-Rose does away with the classical MVC pattern for web backends and instead encourages the use of events and subscriptions. The idea being that if everything is an event or a subscription listening to an event, then it's easier to reason about the complexity of your application as you can focus on just that, without getting lost in the sea of terminology and different abstraction patterns. It's all just action and reaction.
+Rosè does away with the classical MVC pattern for web backends and instead encourages the use of events and subscriptions. The idea being that if everything is an event or a subscription listening to an event, then it's easier to reason about the complexity of your application as you can focus on just that, without getting lost in the sea of terminology and different abstraction patterns. It's all just action and reaction.
 
 ### Platforms
 
-Rose works on both the [Deno](https://deno.com) and [Node](https://nodejs.org) runtimes with their own implementation abstraction.
+Rosè works on both the [Deno](https://deno.com) and [Node](https://nodejs.org) runtimes with their own implementation abstraction.
 
 **Deno example**:
 
 ```typescript
-import Rose, { type RoseState } from "@shapex/rose";
-import DenoRunner from "@shapex/rose/runtime/deno";
+import type { RoseState } from "@shapex/rose";
+import Rose from "@shapex/rose/runtime/deno";
 
 // Define app state
 type AppState = RoseState & {
@@ -73,7 +73,7 @@ type AppState = RoseState & {
 };
 
 // Create app instance with default state
-const app = Rose<AppState>(DenoRunner, {
+const app = Rose<AppState>({
   name: null,
 });
 ```
@@ -81,8 +81,8 @@ const app = Rose<AppState>(DenoRunner, {
 **Node.js example**:
 
 ```typescript
-import Rose, { type RoseState } from "@shapex/rose";
-import NodeRunner from "@shapex/rose/runtime/node";
+import type { RoseState } from "@shapex/rose";
+import Rose from "@shapex/rose/runtime/node";
 
 // Define app state
 type AppState = RoseState & {
@@ -90,27 +90,26 @@ type AppState = RoseState & {
 };
 
 // Create app instance with default state
-const app = Rose<AppState>(NodeRunner, {
+const app = Rose<AppState>({
   name: null,
 });
 ```
 
-It's really just as simple as just adding the wanted runtime runner as the first parameter to `Rose` and the runner
-will take care of the rest on its own.
+It really is as simple as just importing the right runtime.
 
 ### State
 
 Much like using [ShapeX](https://github.com/tryshapex/shapex) on its own, at the core of your application is state. You start by initiating with some initial state, which is an intersection type of `RoseState`:
 
 ```typescript
-import Rose, { type RoseState } from "@shapex/rose";
-import DenoRunner from "@shapex/rose/runtime/deno";
+import type { RoseState } from "@shapex/rose";
+import Rose from "@shapex/rose/runtime/deno";
 
 type AppState = RoseState & {
   name: string | null;
 };
 
-const app = Rose<AppState>(DenoRunner, {
+const app = Rose<AppState>({
   name: null,
 });
 ```
@@ -151,7 +150,7 @@ Notice the `RouteParams` type definition here, which supports generics so you ca
 
 ### Request information
 
-Rose stores request information in the `http` state key, so to access request information you'd do something like this:
+Rosè stores request information in the `http` state key, so to access request information you'd do something like this:
 
 ```typescript
 app.subscribe("my-event", (state) => {
@@ -168,12 +167,15 @@ The `http.request` state consists of the following information:
 export type RoseRequest = {
   url: URL;
   method: string;
+  body: unknown; // this differs based on runtime
 };
 ```
 
+**Note**: each runtime may also add additional information to the `RoseRequest`, which you will be able to see with the help of TypeScript LSP, or by checking the type definitions of each runtime.
+
 ### Built-in events
 
-Rose comes with some built-in events.
+Rosè comes with some built-in events.
 
 #### Responses
 
@@ -181,13 +183,15 @@ You can dispatch response events to return data to the client. All responses mus
 
 ```typescript
 export type RoseResponse = {
-  body?: unknown;
+  body?: unknown; // this differs based on runtime
   status?: number;
   headers?: {
     [key: string]: string;
   };
 };
 ```
+
+**Note**: each runtime may also add additional information to the `RoseResponse`, which you will be able to see with the help of TypeScript LSP, or by checking the type definitions of each runtime.
 
 ##### `http.response.plain`
 

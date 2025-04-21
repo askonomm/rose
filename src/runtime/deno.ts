@@ -4,9 +4,25 @@
  * @module
  */
 import type { ShapeXInstance } from "@shapex/shapex";
-import type { RoseOpts, RoseResponse, RoseState } from "../rose.ts";
+import type {
+  RoseOpts,
+  RoseState,
+  RosePlatformInstance,
+  RoseResponseBase,
+  RoseRequestBase,
+  RoseInstance,
+} from "../rose.ts";
+import Bootstrap from "../rose.ts";
 
-const init = <T extends RoseState>($: ShapeXInstance<T>): void => {
+export type DenoRequest = RoseRequestBase & {
+  body?: BodyInit | null;
+};
+
+export type DenoResponse = RoseResponseBase & {
+  body?: BodyInit | null;
+};
+
+const init = <T extends RoseState<"deno">>($: ShapeXInstance<T>): void => {
   $.subscribe("http.request", (state, req?: Request) => {
     // No request, nothing to do
     if (!req) {
@@ -20,13 +36,14 @@ const init = <T extends RoseState>($: ShapeXInstance<T>): void => {
           request: {
             url: new URL(req.url),
             method: req.method,
+            body: req.body,
           },
         },
       },
     };
   });
 
-  $.subscribe("http.response.plain", (state, data?: RoseResponse) => {
+  $.subscribe("http.response.plain", (state, data?: DenoResponse) => {
     return {
       state: {
         ...state,
@@ -45,7 +62,7 @@ const init = <T extends RoseState>($: ShapeXInstance<T>): void => {
     };
   });
 
-  $.subscribe("http.response.json", (state, data?: RoseResponse) => {
+  $.subscribe("http.response.json", (state, data?: DenoResponse) => {
     return {
       state: {
         ...state,
@@ -65,7 +82,7 @@ const init = <T extends RoseState>($: ShapeXInstance<T>): void => {
   });
 };
 
-const serve = <T extends RoseState>(
+const serve = <T extends RoseState<"deno">>(
   $: ShapeXInstance<T>,
   opts?: RoseOpts
 ): void => {
@@ -92,7 +109,15 @@ const serve = <T extends RoseState>(
   });
 };
 
-export default {
+const runtime: RosePlatformInstance<"deno"> = {
   init,
   serve,
 };
+
+export default function Rose<T extends RoseState<"deno"> = RoseState<"deno">>(
+  state: T = {} as T
+): RoseInstance<T> {
+  return Bootstrap<"deno", T>(runtime as RosePlatformInstance<"deno">, state);
+}
+
+export { runtime };
