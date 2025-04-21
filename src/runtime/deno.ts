@@ -65,7 +65,10 @@ const init = <T extends RoseState>($: ShapeXInstance<T>): void => {
   });
 };
 
-const serve = <T extends RoseState>($: ShapeXInstance<T>, opts?: RoseOpts) => {
+const serve = <T extends RoseState>(
+  $: ShapeXInstance<T>,
+  opts?: RoseOpts
+): void => {
   Deno.serve({ port: opts?.port ?? 3000 }, (req) => {
     $.dispatch("http.request", req);
 
