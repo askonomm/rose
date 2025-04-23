@@ -94,7 +94,7 @@ const init = <T extends RoseState<"node">>($: ShapeXInstance<T>): void => {
         http: {
           ...state.http,
           response: {
-            body: data?.body,
+            body: data?.body ? JSON.stringify(data.body) : "{}",
             status: data?.status ?? 200,
             headers: {
               "Content-Type": "application/json",
