@@ -53,7 +53,7 @@ const init = <T extends RoseState<"deno">>($: ShapeXInstance<T>): void => {
             body: data?.body ?? "",
             status: data?.status ?? 200,
             headers: {
-              "Content-Type": "text/plain; charset=utf-8",
+              "Content-Type": "text/plain",
               ...data?.headers,
             },
           },
@@ -72,7 +72,7 @@ const init = <T extends RoseState<"deno">>($: ShapeXInstance<T>): void => {
             body: data?.body,
             status: data?.status ?? 200,
             headers: {
-              "Content-Type": "application/json; charset=utf-8",
+              "Content-Type": "application/json",
               ...data?.headers,
             },
           },
@@ -103,7 +103,7 @@ const serve = <T extends RoseState<"deno">>(
     return new Response("Not found.", {
       status: 404,
       headers: {
-        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Type": "text/plain",
       },
     });
   });

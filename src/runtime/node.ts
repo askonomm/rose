@@ -79,7 +79,7 @@ const init = <T extends RoseState<"node">>($: ShapeXInstance<T>): void => {
             body: data?.body ?? "",
             status: data?.status ?? 200,
             headers: {
-              "Content-Type": "text/plain; charset=utf-8",
+              "Content-Type": "text/plain",
             },
           },
         },
@@ -97,7 +97,7 @@ const init = <T extends RoseState<"node">>($: ShapeXInstance<T>): void => {
             body: data?.body,
             status: data?.status ?? 200,
             headers: {
-              "Content-Type": "application/json; charset=utf-8",
+              "Content-Type": "application/json",
             },
           },
         },
@@ -126,7 +126,7 @@ const serve = <T extends RoseState<"node">>(
 
       // Otherwise, return a 404 response
       res.writeHead(404, {
-        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Type": "text/plain",
       });
 
       res.end("Not found.");
