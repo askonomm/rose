@@ -105,7 +105,7 @@ Much like using [ShapeX](https://github.com/tryshapex/shapex) on its own, at the
 import type { RoseState } from "@shapex/rose";
 import Rose from "@shapex/rose/runtime/deno";
 
-type AppState = RoseState & {
+type AppState = RoseState<"deno"> & {
   name: string | null;
 };
 
