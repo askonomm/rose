@@ -1,7 +1,7 @@
 import ShapeX, { type ShapeXInstance } from "@shapex/shapex";
 import Router, { type Route } from "./router.ts";
 import type { DenoRequest, DenoResponse } from "./runtime/deno.ts";
-import type { NodeResponse } from "./runtime/node.ts";
+import type { NodeRequest, NodeResponse } from "./runtime/node.ts";
 
 export type RoseRoute = Route & {
   dispatch: string;
@@ -14,7 +14,7 @@ export type RoseRequestBase = {
 
 export type RoseRequest<R extends RuntimeType = "deno"> = R extends "deno"
   ? DenoRequest
-  : DenoRequest;
+  : NodeRequest;
 
 export type RoseResponseBase = {
   status?: number;
@@ -29,7 +29,7 @@ export type RoseResponse<R extends RuntimeType = "deno"> = R extends "deno"
 
 export type RoseState<R extends RuntimeType = "deno"> = {
   http?: {
-    request: RoseRequest;
+    request: RoseRequest<R>;
     response?: RoseResponse<R>;
   };
 };

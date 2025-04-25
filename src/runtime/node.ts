@@ -17,11 +17,11 @@ import { Buffer } from "node:buffer";
 import Bootstrap from "../rose.ts";
 
 export type NodeRequest = RoseRequestBase & {
-  body?: string | object | Buffer;
+  body?: null | string | object | Buffer;
 };
 
 export type NodeResponse = RoseResponseBase & {
-  body?: string | object | Buffer;
+  body?: null | string | object | Buffer;
 };
 
 const init = <T extends RoseState<"node">>($: ShapeXInstance<T>): void => {
