@@ -12,7 +12,7 @@ import Rose from "@shapex/rose/runtime/deno";
 import type { RouteParams } from "@shapex/rose/router";
 
 // Define app state
-type AppState = RoseState & {
+type AppState = RoseState<"deno"> & {
   name: string | null;
 };
 
@@ -68,7 +68,7 @@ import type { RoseState } from "@shapex/rose";
 import Rose from "@shapex/rose/runtime/deno";
 
 // Define app state
-type AppState = RoseState & {
+type AppState = RoseState<"deno"> & {
   name: string | null;
 };
 
@@ -85,7 +85,7 @@ import type { RoseState } from "@shapex/rose";
 import Rose from "@shapex/rose/runtime/node";
 
 // Define app state
-type AppState = RoseState & {
+type AppState = RoseState<"node"> & {
   name: string | null;
 };
 
