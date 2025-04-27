@@ -16,9 +16,7 @@ import http, { type IncomingMessage, type ServerResponse } from "node:http";
 import { Buffer } from "node:buffer";
 import Bootstrap from "../rose.ts";
 
-export type NodeRequest = RoseRequestBase & {
-  body?: null | string | object | Buffer;
-};
+export type NodeRequest = RoseRequestBase & IncomingMessage;
 
 export type NodeResponse = RoseResponseBase & {
   body?: null | string | object | Buffer;
@@ -61,8 +59,8 @@ const init = <T extends RoseState<"node">>($: ShapeXInstance<T>): void => {
         ...state,
         http: {
           request: {
+            ...req,
             url: new URL(req.url ?? "", `http://${req.headers.host}`),
-            method: req.method,
           },
         },
       },
