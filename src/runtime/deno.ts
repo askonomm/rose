@@ -14,9 +14,7 @@ import type {
 } from "../rose.ts";
 import Bootstrap from "../rose.ts";
 
-export type DenoRequest = RoseRequestBase & {
-  body?: BodyInit | null;
-};
+export type DenoRequest = RoseRequestBase & Request;
 
 export type DenoResponse = RoseResponseBase & {
   body?: BodyInit | null;
@@ -34,10 +32,9 @@ const init = <T extends RoseState<"deno">>($: ShapeXInstance<T>): void => {
         ...state,
         http: {
           request: {
-            url: new URL(req.url),
-            method: req.method,
-            body: req.body,
-          },
+            ...req,
+            url: new URL(req.url)
+          }
         },
       },
     };
