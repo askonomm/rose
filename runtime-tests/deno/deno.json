@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "@shapex/rose": "jsr:@shapex/rose"
+  }
+}
