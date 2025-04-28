@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "@shapex/shapex": "jsr:@shapex/shapex"
+  }
+}
