@@ -8,14 +8,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: cd runtime-tests/deno
-
       - uses: denoland/setup-deno@v2
         with:
           deno-version: "~2.0"
 
       - name: "Install deps"
-        run: deno install
+        run: |
+          cd runtime-tests/deno
+          deno install
 
       - name: "Run app"
-        run: deno run --allow-all index.ts
+        run: |
+          cd runtime-tests/deno
+          deno run --allow-all index.ts
