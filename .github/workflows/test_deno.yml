@@ -20,4 +20,4 @@ jobs:
       - name: "Run app"
         run: |
           cd runtime-tests/deno
-          deno run --allow-all index.ts2>&1 | grep -q "Listening on http://" || { echo "Server not listening correctly"; exit 1; }
+          deno run --allow-all index.ts 2>&1 | grep -q "Listening on http://" || { echo "Server not listening correctly"; exit 1; }
