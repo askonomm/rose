@@ -18,4 +18,4 @@ jobs:
         run: deno install
 
       - name: "Run app"
-        run: deno --allow-all run index.ts
+        run: deno run --allow-all index.ts
